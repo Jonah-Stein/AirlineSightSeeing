@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "965782901358",
+    "firebase_url": "https://airlinesightseeing-default-rtdb.firebaseio.com",
+    "project_id": "airlinesightseeing",
+    "storage_bucket": "airlinesightseeing.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:965782901358:android:21d7500b3c1cae61a78c7f",
+        "android_client_info": {
+          "package_name": "com.jss.airlinesightseeing"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "965782901358-ksj50re4e5onptkj9a03sbq73m4fsker.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jss.airlinesightseeing",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "965782901358-28va8lpmgoe22t5a4isr5tos6t2n0b07.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBO8c16fvXweURAmr-tGPkFufGodfeUisU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "965782901358-28va8lpmgoe22t5a4isr5tos6t2n0b07.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "965782901358-s6tn3ckk13pqdsc44grbq6igr2a86bmb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jss.airlinesightseeing"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
