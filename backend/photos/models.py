@@ -1,6 +1,6 @@
 from django.db import models
 import uuid
-from users.models import User
+from users.models import CustomUser
 from flights.models import Flight
 from pins.models import Pin
 
@@ -15,7 +15,11 @@ class Photo(models.Model):
     meta_lat = models.FloatField()
     meta_lon = models.FloatField()
     user = models.ForeignKey(
-        User, related_name="photos", on_delete=models.CASCADE, null=True, blank=True
+        CustomUser,
+        related_name="photos",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
     )
     flight = models.ForeignKey(
         Flight, related_name="photos", on_delete=models.SET_NULL, null=True, blank=True
