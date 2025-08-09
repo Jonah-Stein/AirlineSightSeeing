@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class ActualapiConfig(AppConfig):
+class PinsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'actualapi'
+    name = 'pins'

@@ -34,7 +34,11 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    "actualapi.apps.ActualapiConfig",
+    "users.apps.UsersConfig",
+    "flights.apps.FlightsConfig",
+    "pins.apps.PinsConfig",
+    "landmarks.apps.LandmarksConfig",
+    "photos.apps.PhotosConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -75,8 +79,6 @@ WSGI_APPLICATION = "api.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-print("THIS IS A TEST")
-print(env.str("DB_NAME"))
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
