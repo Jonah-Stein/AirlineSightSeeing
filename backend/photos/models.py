@@ -1,12 +1,13 @@
+from django.conf import settings
 from django.db import models
 import uuid
-from users.models import CustomUser
+from common.models import TimestampedModel
 from flights.models import Flight
 from pins.models import Pin
 
 
 # Create your models here.
-class Photo(models.Model):
+class Photo(TimestampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     image = models.ImageField()
     datetime = models.DateTimeField()
@@ -15,7 +16,7 @@ class Photo(models.Model):
     meta_lat = models.FloatField()
     meta_lon = models.FloatField()
     user = models.ForeignKey(
-        CustomUser,
+        settings.AUTH_USER_MODEL,
         related_name="photos",
         on_delete=models.CASCADE,
         null=True,

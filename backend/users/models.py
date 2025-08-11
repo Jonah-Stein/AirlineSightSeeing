@@ -1,11 +1,14 @@
+import os
 from django.contrib.auth.models import (
     AbstractBaseUser,
     PermissionsMixin,
     BaseUserManager,
 )
 from django.db import models
-from django.utils import timezone
 import uuid
+from .constants import PROFILE_PICTURE_PATH
+
+from common.models import TimestampedModel
 
 
 class CustomUserManager(BaseUserManager):
@@ -30,14 +33,13 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 
-class CustomUser(AbstractBaseUser, PermissionsMixin):
+class CustomUser(AbstractBaseUser, PermissionsMixin, TimestampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True)
-    first_name = models.CharField(max_length=50, blank=True)
-    last_name = models.CharField(max_length=50, blank=True)
+    first_name = models.CharField(max_length=50, null=True, blank=True)
+    last_name = models.CharField(max_length=50, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    date_joined = models.DateTimeField(default=timezone.now)
 
     objects = CustomUserManager()
 
@@ -48,10 +50,17 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return self.email
 
 
-class Profile(models.Model):
+def profile_picture_path(instance, filename):
+    file_extension = os.path.splitext(filename)[1]
+    return f"{PROFILE_PICTURE_PATH}/{instance.id}{file_extension}"
+
+
+class Profile(TimestampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     user = models.OneToOneField(
         CustomUser, on_delete=models.CASCADE, related_name="profile"
     )
-    profile_name = models.CharField()
-    bio = models.CharField()
+    picture = models.ImageField(upload_to=profile_picture_path, null=True, blank=True)
+    # Look into seeding these with the user model (may also be able to do it in separate step)
+    profile_name = models.CharField(null=True, blank=True)
+    bio = models.TextField(null=True, blank=True)
