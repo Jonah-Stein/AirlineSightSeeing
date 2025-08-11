@@ -13,6 +13,15 @@ class UserLoginSchema(Schema):
     password: str
 
 
+class TokensOut(Schema):
+    access: str
+    refresh: str
+
+
+class RefreshTokenSchema(Schema):
+    refresh: str
+
+
 class UpdateUserSchema(Schema):
     email: EmailStr
     first_name: str

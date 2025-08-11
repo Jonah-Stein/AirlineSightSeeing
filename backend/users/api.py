@@ -2,26 +2,51 @@ from ninja import File, Router
 import uuid
 from ninja import Form
 from ninja.files import UploadedFile
+import logging
+from common.auth import JWTAuth
 from . import views
-from .schema import UpdateProfileSchema, UserSignupSchema
+from .schema import (
+    RefreshTokenSchema,
+    TokensOut,
+    UpdateProfileSchema,
+    UserLoginSchema,
+    UserSignupSchema,
+)
 
-user_router = Router()
+logger = logging.getLogger(__name__)
+
+auth_router = Router()
+user_router = Router(auth=JWTAuth())
 profile_router = Router()
 
 
-@user_router.post("/signup")
+@auth_router.post("/signup")
 def signup(request, data: UserSignupSchema):
     return views.signup(data)
 
 
+@auth_router.post("/login", response=TokensOut)
+def login(request, data: UserLoginSchema):
+    return views.login(data)
+
+
+@auth_router.post("/refresh", response=TokensOut)
+def refresh(request, data: RefreshTokenSchema):
+    return views.refresh(data)
+
+
+@user_router.get("/me")
+def get_me(request):
+    logger.info("get_me")
+    logger.info(f"auth: {request.auth}")
+    user_id = request.auth
+    logger.info(f"user_id: {user_id}")
+    return views.get_user(user_id)
+
+
 @user_router.get("/{user_id}")
-def find_one(request, user_id: uuid.UUID):
-    return views.find_one(user_id)
-
-
-@user_router.get("/")
-def find_all(request):
-    return views.find_all()
+def get_user(request, user_id: uuid.UUID):
+    return views.get_user(user_id)
 
 
 # PROFILE FUNCTIONS

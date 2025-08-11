@@ -1,12 +1,19 @@
 import uuid
 import logging
-from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate, get_user_model
 from django.db import IntegrityError
 from django.db.models.fields.files import default_storage
-from django.shortcuts import render
 from ninja import File, UploadedFile
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
+from django.forms.models import model_to_dict
 
-from .schema import UserSignupSchema, UpdateProfileSchema
+from .schema import (
+    RefreshTokenSchema,
+    UserLoginSchema,
+    UserSignupSchema,
+    UpdateProfileSchema,
+)
 from .models import Profile
 
 logger = logging.getLogger(__name__)
@@ -30,16 +37,44 @@ def signup(data: UserSignupSchema):
     except Exception as e:
         logger.exception(f"Error during signup {e}")
         return {"status": "error", "error": "Error creating profile"}
+
+    # TODO: return access and refresh tokens instead of just id
     return {"status": "success", "id": str(user.id)}
 
 
-# Create your views here.
-def find_one(id: str):
-    return "findOne"
+## DO THIS NEXT -- need to work out authentication across endpoints
+def login(data: UserLoginSchema):
+    user = authenticate(email=data.email, password=data.password)
+    if user is None:
+        raise InvalidToken("Invalid credentials")
+    access = AccessToken.for_user(user)
+    refresh = RefreshToken.for_user(user)
+    return {"access": str(access), "refresh": str(refresh)}
 
 
-def find_all():
-    return "findAll"
+def refresh(data: RefreshTokenSchema):
+    try:
+        r = RefreshToken(data.refresh)
+        user = r.user
+
+        r.blacklist()
+
+        new_access = AccessToken.for_user(user)
+        new_refresh = RefreshToken.for_user(user)
+        return {"access": str(new_access), "refresh": str(new_refresh)}
+    except TokenError as e:
+        raise InvalidToken(e.args[0])
+
+
+def get_user(user_id: uuid.UUID):
+    try:
+        user = User.objects.get(id=user_id)
+        user_dict = model_to_dict(user)
+        # Convert UUID to string
+        user_dict["id"] = str(user.id)
+        return user_dict
+    except User.DoesNotExist:
+        return {"error": "User not found"}
 
 
 # Profile views
