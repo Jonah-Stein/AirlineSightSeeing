@@ -22,13 +22,19 @@ from common.models import TimestampedModel
 # All of this flight data should be able to be seeded by flightaware
 class Flight(TimestampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    name = models.CharField()
     flight_number = models.CharField(max_length=10)
-    operating_airline = models.CharField()
+    operating_airline = models.CharField(null=True, blank=True)
     origin = models.CharField(max_length=4)
     destination = models.CharField(max_length=4)
     departure_time = models.DateTimeField()
     arrival_time = models.DateTimeField()
+    flightradar_id = models.CharField(max_length=10, null=True, blank=True)
+
+    @property
+    def name(self):
+        if self.operating_airline and self.flight_number:
+            return f"{self.operating_airline} {self.flight_number}"
+        return f"{self.flight_number} {self.origin} to {self.destination}"
 
     def __str__(self):
         return self.flight_number

@@ -4,6 +4,7 @@ import uuid
 from django.db import transaction
 from .models import Experience
 from photos.models import Photo
+from django.forms.models import model_to_dict
 
 
 def create_experience(user_id: uuid.UUID, data: CreateExperienceSchema):
@@ -17,7 +18,7 @@ def create_experience(user_id: uuid.UUID, data: CreateExperienceSchema):
             Photo.objects.filter(id__in=data.photo_ids, user_id=user_id).update(
                 experience=experience
             )
-            return experience.dict()
+            return model_to_dict(experience)
     except Exception as e:
         return {"error": str(e)}
 

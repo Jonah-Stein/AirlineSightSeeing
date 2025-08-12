@@ -7,7 +7,7 @@ from .schema import CreateExperienceSchema
 experience_router = Router(auth=JWTAuth())
 
 
-@experience_router.post("/")
+@experience_router.post("/create")
 def create_experience(request, experience: CreateExperienceSchema):
     user_id = request.auth
     return views.create_experience(user_id, experience)
