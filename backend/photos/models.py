@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models
 import uuid
 from common.models import TimestampedModel
-from flights.models import Flight
+from experiences.models import Experience
 from pins.models import Pin
 
 
@@ -22,12 +22,16 @@ class Photo(TimestampedModel):
         null=True,
         blank=True,
     )
-    flight = models.ForeignKey(
-        Flight, related_name="photos", on_delete=models.SET_NULL, null=True, blank=True
+    experience = models.ForeignKey(
+        Experience,
+        related_name="photos",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
     )
     pin = models.ForeignKey(
         Pin, related_name="photos", on_delete=models.SET_NULL, null=True, blank=True
     )
 
     def __str__(self):
-        return f"{self.user}-flight:{self.flight}-{self.datetime}"
+        return f"{self.user}-experience:{self.experience}-{self.datetime}"

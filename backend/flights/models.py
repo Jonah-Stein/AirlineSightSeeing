@@ -4,7 +4,22 @@ import uuid
 from common.models import TimestampedModel
 
 
-# Create your models here.
+# TODO: Make flights "public"
+# Right now, flights essentially act like posts for each user:
+# Users create flights and only they can add photos, details, etc.
+# Each of these flights are also associated with a single user.
+# Eventually users should be able to create flights, but they
+# shouldn't be associated with a single user. Instead, multiple
+# users should be able to add their photos, thoughts, and whatever
+# else to the flight.
+# This could get difficult with privacy management (flight will have
+# to show up under user's profile, but their content shouldn't show
+# up for other users viewing the flight).
+# To do this, we need to create a new "experience" model which
+# will be associated with a flight and a user.
+
+
+# All of this flight data should be able to be seeded by flightaware
 class Flight(TimestampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     name = models.CharField()
@@ -14,9 +29,6 @@ class Flight(TimestampedModel):
     destination = models.CharField(max_length=4)
     departure_time = models.DateTimeField()
     arrival_time = models.DateTimeField()
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name="flights", on_delete=models.CASCADE
-    )
 
     def __str__(self):
         return self.flight_number
