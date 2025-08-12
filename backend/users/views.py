@@ -87,7 +87,7 @@ def update_profile(
 ):
     update_data = {k: v for k, v in data.dict().items() if v is not None}
     if picture:
-        file_path = save_profile_picture(profile_id, picture)
+        file_path = save_profile_picture_to_storage(profile_id, picture)
         update_data["picture"] = file_path
     Profile.objects.filter(id=profile_id).update(**update_data)
     return {"status": "success"}
@@ -95,7 +95,7 @@ def update_profile(
 
 # TODO: Check if i can validate the file to be an image
 # TODO: set up image upload pipeline to standardize image format
-def save_profile_picture(profile_id: uuid.UUID, picture: File[UploadedFile]):
+def save_profile_picture_to_storage(profile_id: uuid.UUID, picture: File[UploadedFile]):
     field = Profile._meta.get_field("picture")
     file_path = field.upload_to(Profile(id=profile_id), picture.name)
     # Once image conversions are implemented, this will overwrite the existing profile picture

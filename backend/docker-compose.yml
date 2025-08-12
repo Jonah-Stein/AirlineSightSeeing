@@ -43,7 +43,7 @@ services:
       /bin/sh -c "
         mc alias set local http://minio:9000 ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY} &&
         mc mb --ignore-existing local/${AWS_STORAGE_BUCKET_NAME} &&
-        mc anonymous set download local/${AWS_STORAGE_BUCKET_NAME}
+        mc anonymous set none local/${AWS_STORAGE_BUCKET_NAME}
       "
     restart: "no"
 
