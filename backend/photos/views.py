@@ -50,17 +50,21 @@ def get_users_photos(user_id: uuid.UUID):
             .order_by("-datetime")
             .values_list("image", flat=True)
         )
-        urls = []
-        for path in paths:
-            key = path.lstrip("/")
-            urls.append(
-                client.generate_presigned_url(
-                    "get_object",
-                    Params={"Bucket": bucket_name, "Key": key},
-                    ExpiresIn=300,
-                )
+
+        photos = (
+            Photo.objects.filter(user_id=user_id)
+            .values("id", "image")
+            .order_by("-datetime")
+        )
+        photos_to_return = dict()
+        for photo in photos:
+            key = photo["image"].lstrip("/")
+            photos_to_return[str(photo["id"])] = client.generate_presigned_url(
+                "get_object",
+                Params={"Bucket": bucket_name, "Key": key},
+                ExpiresIn=300,
             )
-        return urls
+        return photos_to_return
     except Exception as e:
         return {"status": "error", "error": f"Failed to get user's photos, {e}"}
 
