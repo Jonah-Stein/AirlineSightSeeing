@@ -13,11 +13,13 @@ class UserLoginSchema(Schema):
     password: str
 
 
+# TODO: Change to only send access token
 class TokensOut(Schema):
     access: str
     refresh: str
 
 
+# TODO: Can probably remove this
 class RefreshTokenSchema(Schema):
     refresh: str
 

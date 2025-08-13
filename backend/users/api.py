@@ -20,6 +20,7 @@ user_router = Router(auth=JWTAuth())
 profile_router = Router()
 
 
+# TODO: Change auth to use cookies for refresh token
 @auth_router.post("/signup")
 def signup(request, data: UserSignupSchema):
     return views.signup(data)
