@@ -1,15 +1,16 @@
 import uuid
 import logging
+from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model
 from django.db import IntegrityError
 from django.db.models.fields.files import default_storage
 from ninja import File, UploadedFile
-from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
-from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
+from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework_simplejwt.exceptions import InvalidToken
 from django.forms.models import model_to_dict
+from ninja.errors import HttpError
 
 from .schema import (
-    RefreshTokenSchema,
     UserLoginSchema,
     UserSignupSchema,
     UpdateProfileSchema,
@@ -20,7 +21,7 @@ logger = logging.getLogger(__name__)
 User = get_user_model()
 
 
-def signup(data: UserSignupSchema):
+def signup(request, data: UserSignupSchema):
     password = data.password
     user_data_excluding_password = {
         k: v for k, v in data.dict().items() if k != "password"
@@ -29,6 +30,7 @@ def signup(data: UserSignupSchema):
         user = User.objects.create_user(
             password=password, **user_data_excluding_password
         )
+        return login(request, UserLoginSchema(email=user.email, password=password))
     except IntegrityError:
         return {
             "status": "error",
@@ -38,32 +40,29 @@ def signup(data: UserSignupSchema):
         logger.exception(f"Error during signup {e}")
         return {"status": "error", "error": "Error creating profile"}
 
-    # TODO: return access and refresh tokens instead of just id
-    return {"status": "success", "id": str(user.id)}
 
-
-## DO THIS NEXT -- need to work out authentication across endpoints
-def login(data: UserLoginSchema):
+def login(request, data: UserLoginSchema):
     user = authenticate(email=data.email, password=data.password)
     if user is None:
         raise InvalidToken("Invalid credentials")
     access = AccessToken.for_user(user)
-    refresh = RefreshToken.for_user(user)
-    return {"access": str(access), "refresh": str(refresh)}
+
+    request.session.flush()
+    request.session["user_id"] = str(user.id)
+    request.session.set_expiry(settings.SESSION_COOKIE_AGE)
+    request.session.save()
+
+    return {"access": str(access)}
 
 
-def refresh(data: RefreshTokenSchema):
+def refresh(request):
     try:
-        r = RefreshToken(data.refresh)
-        user = r.user
+        user_id = request.session["user_id"]
+        new_access = AccessToken.for_user(User(id=user_id))
 
-        r.blacklist()
-
-        new_access = AccessToken.for_user(user)
-        new_refresh = RefreshToken.for_user(user)
-        return {"access": str(new_access), "refresh": str(new_refresh)}
-    except TokenError as e:
-        raise InvalidToken(e.args[0])
+        return {"access": str(new_access)}
+    except:
+        raise HttpError(401, "Invalid/missing refresh token")
 
 
 def get_user(user_id: uuid.UUID):

@@ -3,10 +3,11 @@ import uuid
 from ninja import Form
 from ninja.files import UploadedFile
 import logging
+
+from rest_framework_simplejwt.exceptions import InvalidToken
 from common.auth import JWTAuth
 from . import views
 from .schema import (
-    RefreshTokenSchema,
     TokensOut,
     UpdateProfileSchema,
     UserLoginSchema,
@@ -20,20 +21,23 @@ user_router = Router(auth=JWTAuth())
 profile_router = Router()
 
 
-# TODO: Change auth to use cookies for refresh token
-@auth_router.post("/signup")
+@auth_router.post("/signup", response=TokensOut)
 def signup(request, data: UserSignupSchema):
-    return views.signup(data)
+    return views.signup(request, data)
 
 
 @auth_router.post("/login", response=TokensOut)
 def login(request, data: UserLoginSchema):
-    return views.login(data)
+    return views.login(request, data)
 
 
 @auth_router.post("/refresh", response=TokensOut)
-def refresh(request, data: RefreshTokenSchema):
-    return views.refresh(data)
+def refresh(request):
+    refresh_token = request.COOKIES.get("refresh_token")
+    if not refresh_token:
+        raise InvalidToken("No refresh token provided")
+    else:
+        return views.refresh(refresh_token)
 
 
 @user_router.get("/me")
