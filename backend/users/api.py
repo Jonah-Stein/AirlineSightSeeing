@@ -33,11 +33,12 @@ def login(request, data: UserLoginSchema):
 
 @auth_router.post("/refresh", response=TokensOut)
 def refresh(request):
-    refresh_token = request.COOKIES.get("refresh_token")
-    if not refresh_token:
-        raise InvalidToken("No refresh token provided")
-    else:
-        return views.refresh(refresh_token)
+    # refresh_token = request.COOKIES.get("refresh_token")
+    # if not refresh_token:
+    #     raise InvalidToken("No refresh token provided")
+    # else:
+    #     return views.refresh(refresh_token)
+    return views.refresh(request)
 
 
 @user_router.get("/me")

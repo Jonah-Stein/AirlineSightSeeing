@@ -1,7 +1,7 @@
 import uuid
 import logging
 from django.conf import settings
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import authenticate, get_user_model, login as auth_login
 from django.db import IntegrityError
 from django.db.models.fields.files import default_storage
 from ninja import File, UploadedFile
@@ -48,17 +48,19 @@ def login(request, data: UserLoginSchema):
         raise InvalidToken("Invalid credentials")
     access = AccessToken.for_user(user)
 
-    request.session.flush()
-    request.session["user_id"] = str(user.id)
-    request.session.set_expiry(settings.SESSION_COOKIE_AGE)
-    request.session.save()
+    auth_login(request, user)
+    # request.session.flush()
+    # request.session["user_id"] = str(user.id)
+    # request.session.set_expiry(settings.SESSION_COOKIE_AGE)
+    # request.session.save()
 
     return {"access": str(access)}
 
 
 def refresh(request):
     try:
-        user_id = request.session["user_id"]
+        user_id = request.user.id
+
         new_access = AccessToken.for_user(User(id=user_id))
 
         return {"access": str(new_access)}
