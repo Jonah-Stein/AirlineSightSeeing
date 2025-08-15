@@ -28,7 +28,7 @@ export default function Navbar() {
         Landmarks
       </NavLink>
       <NavLink
-        to={`/profile/${mockUsername}`}
+        to={`/profile`}
         end
         className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
       >

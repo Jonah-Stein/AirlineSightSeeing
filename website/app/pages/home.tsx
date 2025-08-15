@@ -1,5 +1,4 @@
 import type { Route } from "./+types/home";
-import { Welcome } from "../welcome/welcome";
 import Navbar from "components/Navbar";
 
 export default function Home() {
