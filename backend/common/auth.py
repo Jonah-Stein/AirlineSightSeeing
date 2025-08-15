@@ -10,5 +10,5 @@ class JWTAuth(HttpBearer):
         try:
             payload = AccessToken(token)
             return payload["user_id"]
-        except Exception:
+        except Exception as e:
             return None

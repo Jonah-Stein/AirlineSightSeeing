@@ -9,6 +9,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.exceptions import InvalidToken
 from django.forms.models import model_to_dict
 from ninja.errors import HttpError
+from common.storage import get_presigned_url
 
 from .schema import (
     UserLoginSchema,
@@ -77,8 +78,17 @@ def get_user(user_id: uuid.UUID):
 
 
 # Profile views
-def get_profile(profile_id: uuid.UUID):
-    return Profile.objects.get(id=profile_id)
+def get_profile(id: uuid.UUID, by_user=False):
+    if by_user:
+        data = Profile.objects.get(user_id=id)
+    else:
+        data = Profile.objects.get(id=id)
+    data_dict = model_to_dict(data)
+    if data.picture and data.picture.name:
+        data_dict["picture"] = get_presigned_url(data.picture.name)
+    else:
+        data_dict["picture"] = None
+    return data_dict
 
 
 def update_profile(

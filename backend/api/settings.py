@@ -51,9 +51,11 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "ninja",
     "storages",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -192,3 +194,6 @@ SESSION_COOKIE_NAME = "refresh_token"
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = not DEBUG
 SESSION_COOKIE_SAMESITE = "Lax"
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True

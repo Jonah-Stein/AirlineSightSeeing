@@ -6,6 +6,7 @@ from .schema import CreatePhotoSchema
 from .models import Photo
 from ninja.files import UploadedFile
 import uuid
+from common.storage import get_presigned_url
 
 # Create your views here.
 
@@ -42,38 +43,17 @@ def get_users_photos(user_id: uuid.UUID):
     Frontend then makes a direct call to the object storage to get the photo.
     """
     try:
-        client = default_storage.connection.meta.client
-        bucket_name = default_storage.bucket_name
-
-        paths = (
-            Photo.objects.filter(user_id=user_id)
-            .order_by("-datetime")
-            .values_list("image", flat=True)
-        )
 
         photos = (
             Photo.objects.filter(user_id=user_id)
             .values("id", "image")
             .order_by("-datetime")
         )
+
         photos_to_return = dict()
         for photo in photos:
             key = photo["image"].lstrip("/")
-            photos_to_return[str(photo["id"])] = client.generate_presigned_url(
-                "get_object",
-                Params={"Bucket": bucket_name, "Key": key},
-                ExpiresIn=300,
-            )
+            photos_to_return[str(photo["id"])] = get_presigned_url(key)
         return photos_to_return
     except Exception as e:
         return {"status": "error", "error": f"Failed to get user's photos, {e}"}
-
-
-def get_signed_url(path, seconds=300):
-    client = default_storage.connection.meta.client
-    bucket_name = default_storage.bucket_name
-    key = path.lstrip("/")
-
-    return client.generate_presigned_url(
-        "get_object", Params={"Bucket": bucket_name, "Key": key}, ExpiresIn=seconds
-    )

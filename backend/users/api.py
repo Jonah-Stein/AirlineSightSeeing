@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 auth_router = Router()
 user_router = Router(auth=JWTAuth())
-profile_router = Router()
+profile_router = Router(auth=JWTAuth())
 
 
 @auth_router.post("/signup", response=TokensOut)
@@ -55,6 +55,11 @@ def get_user(request, user_id: uuid.UUID):
 
 
 # PROFILE FUNCTIONS
+@profile_router.get("")
+def get_my_profile(request):
+    return views.get_profile(request.auth, by_user=True)
+
+
 @profile_router.get("/{profile_id}")
 def get_profile(request, profile_id: str):
     return views.get_profile(profile_id)
