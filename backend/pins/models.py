@@ -1,4 +1,5 @@
 from django.db import models
+from api import settings
 from common.models import TimestampedModel
 import uuid
 
@@ -10,6 +11,9 @@ class Pin(TimestampedModel):
     lon = models.FloatField()
     name = models.CharField()
     description = models.CharField(null=True, blank=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True
+    )
 
     def __str__(self):
         return self.name

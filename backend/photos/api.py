@@ -1,5 +1,6 @@
+import uuid
 from ninja import Router
-from .schema import CreatePhotoSchema
+from .schema import CreatePhotoSchema, UpdatePhotoSchema
 from . import views
 from common.auth import JWTAuth
 from typing import List
@@ -20,7 +21,12 @@ def upload_photo(request, photos: File[List[UploadedFile]]):
     return views.upload_photos(user_id, photos)
 
 
-@photo_router.get("/user")
+@photo_router.get("")
 def get_users_photos(request):
     user_id = request.auth
     return views.get_users_photos(user_id)
+
+
+@photo_router.patch("/{photo_id}")
+def update_photo(request, photo_id: uuid.UUID, photo: UpdatePhotoSchema):
+    return views.update_photo(photo_id, photo)

@@ -2,7 +2,7 @@ from typing import List
 from django.core.files.storage import default_storage
 from django.shortcuts import render
 from ninja import File
-from .schema import CreatePhotoSchema
+from .schema import CreatePhotoSchema, UpdatePhotoSchema
 from .models import Photo
 from ninja.files import UploadedFile
 import uuid
@@ -43,7 +43,6 @@ def get_users_photos(user_id: uuid.UUID):
     Frontend then makes a direct call to the object storage to get the photo.
     """
     try:
-
         photos = (
             Photo.objects.filter(user_id=user_id)
             .values("id", "image")
@@ -52,8 +51,14 @@ def get_users_photos(user_id: uuid.UUID):
 
         photos_to_return = dict()
         for photo in photos:
-            key = photo["image"].lstrip("/")
-            photos_to_return[str(photo["id"])] = get_presigned_url(key)
+            image_key = photo["image"].lstrip("/")
+            photos_to_return[str(photo["id"])] = get_presigned_url(image_key)
         return photos_to_return
     except Exception as e:
         return {"status": "error", "error": f"Failed to get user's photos, {e}"}
+
+
+def update_photo(photo_id: uuid.UUID, update_photo: UpdatePhotoSchema):
+    update_photo_dict = {k: v for k, v in update_photo.dict().items() if v is not None}
+    photo = Photo.objects.filter(id=photo_id).update(**update_photo_dict)
+    return photo
