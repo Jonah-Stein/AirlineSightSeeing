@@ -5,7 +5,7 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-    accessToken: string;
+    access: string;
 }
 
 export interface SignUpRequest {
@@ -14,5 +14,5 @@ export interface SignUpRequest {
 }
 
 export interface SignUpResponse {
-    accessToken: string;
+    access: string;
 }

@@ -1,7 +1,6 @@
 import { NavLink } from "react-router";
 
 export default function Navbar() {
-  const mockUsername = "user";
   return (
     <nav className="navbar">
       <NavLink
@@ -33,6 +32,13 @@ export default function Navbar() {
         className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
       >
         Profile
+      </NavLink>
+      <NavLink
+        to={`/map`}
+        end
+        className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+      >
+        Map
       </NavLink>
     </nav>
   );

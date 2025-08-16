@@ -5,5 +5,6 @@ export default [index("./pages/home.tsx"),
     route("/profile", "./pages/my-profile.tsx"),
     route("/profile/:username", "./pages/profile.tsx"),
     route("/landmarks", "./pages/landmarks.tsx"),
-    route("/auth", "./pages/auth.tsx")
+    route("/auth", "./pages/auth.tsx"),
+    route("/map", "./pages/map.tsx")
 ] satisfies RouteConfig;
