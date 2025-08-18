@@ -1,5 +1,6 @@
 from typing import List
 from django.core.files.storage import default_storage
+from django.forms import model_to_dict
 from django.shortcuts import render
 from ninja import File
 from .schema import CreatePhotoSchema, UpdatePhotoSchema
@@ -49,10 +50,12 @@ def get_users_photos(user_id: uuid.UUID):
             .order_by("-datetime")
         )
 
-        photos_to_return = dict()
+        photos_to_return = []
         for photo in photos:
             image_key = photo["image"].lstrip("/")
-            photos_to_return[str(photo["id"])] = get_presigned_url(image_key)
+            photos_to_return.append(
+                {"id": str(photo["id"]), "imageUrl": get_presigned_url(image_key)}
+            )
         return photos_to_return
     except Exception as e:
         return {"status": "error", "error": f"Failed to get user's photos, {e}"}
@@ -62,3 +65,17 @@ def update_photo(photo_id: uuid.UUID, update_photo: UpdatePhotoSchema):
     update_photo_dict = {k: v for k, v in update_photo.dict().items() if v is not None}
     photo = Photo.objects.filter(id=photo_id).update(**update_photo_dict)
     return photo
+
+
+def get_photo(photo_id: uuid.UUID):
+    photo = Photo.objects.select_related("experience", "pin").get(id=photo_id)
+    photo_dict = model_to_dict(photo)
+    photo_dict["imageUrl"] = get_presigned_url(photo_dict["image"].name)
+    photo_dict.pop("image")
+    # return photo_dict
+    # TODO: fetch flight and pin data as well
+    return {
+        **photo_dict,
+        "experience": model_to_dict(photo.experience) if photo.experience else None,
+        "pin": model_to_dict(photo.pin) if photo.pin else None,
+    }

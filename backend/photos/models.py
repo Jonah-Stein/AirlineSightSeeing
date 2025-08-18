@@ -18,6 +18,7 @@ class Photo(TimestampedModel):
     image = models.ImageField(upload_to=photo_upload_name)
     # Need to change this at some point. Coordinates stored as a tuple
     # Have a meta chords and calculated choords
+    name = models.CharField(null=True, blank=True)
     lat = models.FloatField(null=True, blank=True)
     lon = models.FloatField(null=True, blank=True)
     datetime = models.DateTimeField(null=True, blank=True)

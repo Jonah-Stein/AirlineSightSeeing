@@ -1,5 +1,5 @@
 import {skymarkApi} from "api/axios";
-import { type SimplePhoto, type UpdatePhoto } from "api/types/photos"
+import { type PhotoDetails, type SimplePhoto, type UpdatePhoto } from "api/types/photos"
 
 export const getMyPhotos = async () => {
   const { data } = await skymarkApi.get("/photos");
@@ -10,3 +10,8 @@ export const updatePhoto = async (photoId: string, updatePhoto: UpdatePhoto): Pr
   const { data } = await skymarkApi.patch(`/photos/${photoId}`, updatePhoto);
   return data;
 };
+
+export const getPhoto = async (photoId: string): Promise<PhotoDetails> => {
+  const {data} = await skymarkApi.get(`/photos/${photoId}`)
+  return data
+}

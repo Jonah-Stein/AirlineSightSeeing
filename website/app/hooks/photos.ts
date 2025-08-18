@@ -1,5 +1,5 @@
 import { useMutation, useQuery, type UseQueryOptions } from "@tanstack/react-query";
-import { getMyPhotos, updatePhoto } from "api/photos";
+import { getMyPhotos, getPhoto, updatePhoto } from "api/photos";
 import { queryClient } from "api/query-client";
 import type { UpdatePhoto, SimplePhoto } from "api/types/photos";
 
@@ -22,4 +22,12 @@ export function useUpdatePhoto(photoId: string, updateData: UpdatePhoto) {
         }
     })
     return mutation
+}
+
+export function useGetPhoto(photoId: string) {
+    const {data} = useQuery({
+        queryKey: ["photos", photoId],
+        queryFn: () => getPhoto(photoId)
+    })
+    return data
 }

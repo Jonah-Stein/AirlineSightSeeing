@@ -27,6 +27,13 @@ def get_users_photos(request):
     return views.get_users_photos(user_id)
 
 
+# TODO: add auth
+@photo_router.get("/{photo_id}")
+def get_photo(request, photo_id: uuid.UUID):
+    print(f"getting photo {photo_id}")
+    return views.get_photo(photo_id)
+
+
 @photo_router.patch("/{photo_id}")
 def update_photo(request, photo_id: uuid.UUID, photo: UpdatePhotoSchema):
     return views.update_photo(photo_id, photo)

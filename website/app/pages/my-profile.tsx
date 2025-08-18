@@ -2,6 +2,7 @@ import Navbar from "components/Navbar";
 import { useMyProfile } from "../hooks/profile";
 import { useState } from "react";
 import { useGetMyPhotos } from "app/hooks/photos";
+import { Link } from "react-router";
 
 export default function MyProfile() {
   const [showPhotos, setShowPhotos] = useState(false);
@@ -112,7 +113,13 @@ export default function MyProfile() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {photos?.map((photo) => (
                   <div key={photo.id}>
-                    <img src={photo.imageUrl} alt={photo.id} />
+                    <Link to={`/photo/${photo.id}`}>
+                      <img
+                        src={photo.imageUrl}
+                        alt={photo.id}
+                        // style={{ cursor: "pointer" }}
+                      />
+                    </Link>
                   </div>
                 ))}
               </div>
